@@ -7,6 +7,12 @@ function getTimeString(time){
     return(`${hours} hours ${minute} minute ${remainingSecond} second`);
 }
 
+const removeActive = () =>{
+    const activeButton = document.getElementsByClassName('category-btn')
+    for (const btn of activeButton) {
+        btn.classList.remove('active')
+    }
+}
 
 // create loadDataCategories
 const loadCategories = () => {
@@ -48,6 +54,14 @@ const loadVideos = () => {
 // loadCategoryVideo data
 const loadCategoryVideo = (id) =>{
     // alert(id)
+
+    // remove active bg-color
+    removeActive()
+    const activeBtn = document.getElementById(`btn-${id}`)
+    // add active bg-color
+    activeBtn.classList.add('active')
+
+    console.log(activeBtn);
     fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
     .then(res => res.json())
     .then(data => displayVideosData(data.category))
@@ -59,6 +73,21 @@ const displayVideosData = (videos) => {
     console.log(videos);
     const videosContainer = document.getElementById('videos');
     videosContainer.innerHTML = ''
+
+    if (videos.length == 0) {
+        videosContainer.classList.remove('grid')
+        videosContainer.innerHTML = `
+        <div class='min-h-[300px] flex flex-col justify-center items-center'>
+        <img src="../asses/Icon.png" />
+        <h2 class="font-bold text-xl mt">
+        No Content here in this category
+        </h2>
+        </div>
+        `;
+        return 
+    }else{
+        videosContainer.classList.add('grid')
+    }
     videos.forEach(video => {
         console.log(video);
         const cardDiv = document.createElement('div');
@@ -98,7 +127,7 @@ const displayCategories = (categories) => {
         // console.log(item.category);
         const buttonContainer = document.createElement('div');
         buttonContainer.innerHTML = `
-        <button onclick=(loadCategoryVideo(${item.category_id})) class='btn'>${item.category}</button>
+        <button id="btn-${item.category_id}" onclick=(loadCategoryVideo(${item.category_id})) class='btn category-btn'>${item.category}</button>
         `
         categoryContainer.append(buttonContainer)
     })
